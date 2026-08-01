@@ -1,0 +1,74 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "~/.config/fastfetch/logo.txt",
+    "padding": {
+        "top": 0,
+        "right": 6
+    },
+    "color": {             // Override logo colors
+    "1": "default",
+    "2": "green"
+    }
+  },
+  "display": {
+    "separator": ": ",
+    "color": {
+      "keys": "blue",    // Key color
+      "title": "blue"     // Title color
+    },
+    "percent": {
+      "type": 9,
+      "color": {
+        "green": "green",
+        "yellow": "light_yellow",
+        "red": "light_red"
+      }
+    }
+  },    
+  "modules": [
+    "title",
+    {
+            "type": "custom",
+            "format": "──────────────────────────────────────────"
+        },
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "packages",
+    "shell",
+    {
+            "type": "custom",
+            "format": "──────────────────────────────────────────"
+        },
+    // "display",
+    "de",
+    "wm",
+    // "wmtheme",
+    // "theme",
+    // "icons",
+    // "font",
+    // "cursor",
+    "terminal",
+    {
+            "type": "custom",
+            "format": "──────────────────────────────────────────"
+        },
+    // "terminalfont",
+    "cpu",
+    "gpu",
+    "memory",
+    // "swap",
+    //"disk",
+    // "localip",
+    // "battery",
+    // "poweradapter",
+    // "locale",
+    {
+            "type": "custom",
+            "format": "──────────────────────────────────────────"
+        },
+    "colors"
+  ]
+}

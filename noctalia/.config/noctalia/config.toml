@@ -1,0 +1,159 @@
+config_version = 8
+
+[bar.default]
+capsule_border = "primary"
+center = [ "media", "spacer_2", "workspaces", "spacer_3", "clock", "spacer_4", "weather" ]
+end = [
+    "network",
+    "bluetooth",
+    "brightness",
+    "battery",
+    "control-center",
+    "tray",
+    "clipboard",
+    "notifications",
+    "volume",
+    "TV",
+    "session"
+]
+padding = 16
+radius = 16
+radius_bottom_right = 16
+radius_top_left = 0
+radius_top_right = 0
+start = [ "launcher", "spacer_5", "cpu", "ram", "temp", "spacer_6", "bar", "active_window", "wallpaper" ]
+thickness = 36
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "clipboard"
+
+[[control_center.shortcuts]]
+type = "session"
+
+[dock]
+background_opacity = 0.99999997764825821
+cross_axis_padding = 2
+icon_size = 36
+item_spacing = 0
+launcher_position = "end"
+pinned = [ "firefox", "discord", "spotify-launcher", "steam" ]
+radius_bottom_left = 0
+radius_bottom_right = 0
+
+[plugins]
+enabled = [ "yuuto/calculator" ]
+
+[shell]
+font_family = "IBM Plex Sans"
+
+    [shell.launcher]
+    auto_paste = "off"
+    compact = true
+
+    [shell.mpris]
+    blacklist = [ "firefox" ]
+
+    [shell.panel]
+    borders = false
+    clipboard_placement = "attached"
+    control_center_position = "center"
+    launcher_placement = "attached"
+    open_near_click_clipboard = true
+    open_near_click_launcher = true
+    open_near_click_session = true
+    open_near_click_wallpaper = true
+    polkit_placement = "attached"
+    wallpaper_position = "center"
+
+[theme]
+builtin = "Noctalia"
+community_palette = "Oxocarbon"
+mode = "dark"
+source = "wallpaper"
+wallpaper_scheme = "m3-content"
+
+    [theme.templates]
+    builtin_ids = [ "alacritty", "btop", "gtk3", "gtk4", "niri", "qt" ]
+
+[wallpaper]
+directory = "~/Pictures/Wallpapers"
+
+[wallpaper.automation]
+enabled = true
+interval_seconds = 300
+order = "random"
+
+[widget.active_window]
+display = "text_only"
+enabled = false
+
+[widget.bar]
+type = "yuuto/calculator:bar"
+
+[widget.battery]
+enabled = false
+
+[widget.bluetooth]
+enabled = false
+
+[widget.brightness]
+enabled = false
+
+[widget.clock]
+format = "{:%H:%M \u2022 %a , %d/%m}"
+
+[widget.control-center]
+enabled = false
+
+[widget.launcher]
+glyph = "rocket"
+
+[widget.media]
+hide_when_no_media = true
+max_length = 800
+
+[widget.network]
+enabled = false
+
+[widget.ram]
+stat = "ram_pct"
+
+[widget.spacer_2]
+length = 24
+type = "spacer"
+
+[widget.spacer_3]
+length = 24
+type = "spacer"
+
+[widget.spacer_4]
+length = 24
+type = "spacer"
+
+[widget.spacer_5]
+length = 24
+type = "spacer"
+
+[widget.spacer_6]
+length = 24
+type = "spacer"
+
+[widget.volume]
+show_label = false
+
+[widget.wallpaper]
+enabled = false
+
+[widget.weather]
+show_condition = false
+
+[widget.workspaces]
+active_pill_size = 1.0
+anchor = true
+style = "minimal"

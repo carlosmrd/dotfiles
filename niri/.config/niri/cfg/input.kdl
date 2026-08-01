@@ -1,0 +1,21 @@
+input {
+    keyboard {
+        xkb {
+            //layout "us"
+        }
+        numlock //Numlock on startup
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {
+        accel-profile "flat"
+        accel-speed 0.0
+    }
+
+    workspace-auto-back-and-forth
+    //focus-follows-mouse
+}

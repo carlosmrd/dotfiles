@@ -1,0 +1,12 @@
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+
+//NOCTALIA V5
+spawn-at-startup "noctalia"
+
+//NOCTALIA V4
+//spawn-at-startup "qs" "-c" "noctalia-shell"
+
+spawn-sh-at-startup "steam -silent"
+spawn-sh-at-startup "sleep 2 && discord"
+spawn-sh-at-startup "sleep 8 && spotify-launcher"
