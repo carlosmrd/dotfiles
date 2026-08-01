@@ -21,7 +21,7 @@ radius = 16
 radius_bottom_right = 16
 radius_top_left = 0
 radius_top_right = 0
-start = [ "launcher", "spacer_5", "cpu", "ram", "temp", "spacer_6", "bar", "active_window", "wallpaper" ]
+start = [ "launcher", "spacer_5", "bar", "spacer_6", "cpu", "ram", "temp", "active_window", "wallpaper" ]
 thickness = 36
 
 [[control_center.shortcuts]]
