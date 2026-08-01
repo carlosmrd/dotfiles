@@ -6,3 +6,6 @@ niri/.config/niri/cfg/keybinds.local.kdl
 niri/.config/niri/cfg/layout.local.kdl
 niri/.config/niri/cfg/misc.local.kdl
 niri/.config/niri/cfg/rules.local.kdl
+niri/.config/niri/noctalia.kdl
+
+alacritty/.config/alacritty/themes/
