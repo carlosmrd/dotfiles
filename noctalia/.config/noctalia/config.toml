@@ -37,7 +37,8 @@ type = "clipboard"
 type = "session"
 
 [dock]
-background_opacity = 0.99999997764825821
+enabled = true
+background_opacity = 1
 cross_axis_padding = 2
 icon_size = 36
 item_spacing = 0
