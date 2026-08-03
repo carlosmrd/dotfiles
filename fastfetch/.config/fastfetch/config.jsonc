@@ -62,7 +62,8 @@
     },
     {
       "type": "gpu",
-      "format": "{name}"
+      "format": "{name}",
+      "hideType": "integrated"
     },
     "memory",
     // "swap",
