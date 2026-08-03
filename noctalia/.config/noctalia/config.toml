@@ -6,14 +6,14 @@ center = [ "media", "spacer_2", "workspaces", "spacer_3", "clock", "spacer_4", "
 end = [
     "network",
     "bluetooth",
-    "brightness",
-    "battery",
     "control-center",
     "tray",
     "clipboard",
     "notifications",
+    "brightness",
     "volume",
     "TV",
+    "battery",
     "session"
 ]
 padding = 16
@@ -98,13 +98,13 @@ enabled = false
 type = "yuuto/calculator:bar"
 
 [widget.battery]
-enabled = false
+enabled = true
 
 [widget.bluetooth]
 enabled = false
 
 [widget.brightness]
-enabled = false
+enabled = true
 
 [widget.clock]
 format = "{:%H:%M \u2022 %a , %d/%m}"
