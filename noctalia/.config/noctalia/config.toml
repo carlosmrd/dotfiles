@@ -10,9 +10,9 @@ end = [
     "tray",
     "clipboard",
     "notifications",
-    "brightness",
     "volume",
     "TV",
+    "brightness",
     "battery",
     "session"
 ]
@@ -99,12 +99,14 @@ type = "yuuto/calculator:bar"
 
 [widget.battery]
 enabled = true
+show_label = false
 
 [widget.bluetooth]
 enabled = false
 
 [widget.brightness]
 enabled = true
+show_label = false
 
 [widget.clock]
 format = "{:%H:%M \u2022 %a , %d/%m}"
