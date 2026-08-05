@@ -119,7 +119,7 @@ glyph = "rocket"
 
 [widget.media]
 hide_when_no_media = true
-max_length = 800
+max_length = 200
 
 [widget.network]
 enabled = false
