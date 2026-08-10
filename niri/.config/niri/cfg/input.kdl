@@ -9,6 +9,7 @@ input {
     touchpad {
         tap
         natural-scroll
+        scroll-method "two-finger"
     }
 
     mouse {
