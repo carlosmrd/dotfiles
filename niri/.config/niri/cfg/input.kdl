@@ -8,8 +8,9 @@ input {
 
     touchpad {
         tap
-        natural-scroll
         scroll-method "two-finger"
+        accel-profile "flat"
+        accel-speed 0.0
     }
 
     mouse {
