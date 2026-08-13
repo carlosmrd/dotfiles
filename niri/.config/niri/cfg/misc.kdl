@@ -10,11 +10,6 @@ environment {
     XDG_SESSION_TYPE "wayland"
 }
 
-cursor {
-    xcursor-theme "capitaine-cursors"
-    xcursor-size 24
-}
-
 debug {
     honor-xdg-activation-with-invalid-serial
 }
@@ -22,3 +17,5 @@ debug {
 hotkey-overlay {
     skip-at-startup
 }
+
+include optional=true "./misc.local.kdl"

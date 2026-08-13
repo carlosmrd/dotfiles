@@ -43,7 +43,7 @@ cross_axis_padding = 2
 icon_size = 36
 item_spacing = 0
 launcher_position = "end"
-pinned = [ "alacritty", "firefox", "discord", "steam", "spotify-launcher" ]
+pinned = [ "Alacritty", "firefox", "iscord", "steam", "spotify-launcher" ]
 radius_bottom_left = 0
 radius_bottom_right = 0
 
