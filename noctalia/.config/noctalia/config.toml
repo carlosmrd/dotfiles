@@ -160,3 +160,9 @@ show_condition = false
 active_pill_size = 1.0
 anchor = true
 style = "minimal"
+
+[widget.tray]
+hide_passive = true
+hidden = ["arch-update-tray"]
+pinned = []
+drawer = false
