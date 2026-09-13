@@ -10,7 +10,7 @@ fi
 
 TARGET_USER="${SUDO_USER:-$USER}"
 TARGET_UID="$(id -u "$TARGET_USER")"
-TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
+TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6 || true)"
 
 if [[ -z "$TARGET_HOME" || ! -d "$TARGET_HOME" ]]; then
     echo "install.sh: não foi possível determinar HOME de $TARGET_USER." >&2
@@ -172,10 +172,14 @@ sudo pacman -Syu --needed --noconfirm \
 
 log "detectando arquitetura da CPU e GPU"
 
-CPU_MARCH="$(
-    gcc -march=native -Q --help=target 2>/dev/null |
-        awk '$1 == "-march=" { print $2; exit }'
-)"
+CPU_MARCH=""
+
+if command -v gcc >/dev/null 2>&1 && command -v awk >/dev/null 2>&1; then
+    CPU_MARCH="$(
+        gcc -march=native -Q --help=target 2>/dev/null |
+            awk '$1 == "-march=" { print $2; exit }' || true
+    )"
+fi
 
 ISA_REPO="v3"
 ISA_PREVIEW="x86-64-v3"
@@ -235,7 +239,7 @@ else
         echo "$LISTING" |
             grep -oE "$regex" |
             sort -V |
-            tail -n1
+            tail -n1 || true
     }
 
     KEYRING_PKG="$(
