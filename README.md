@@ -37,9 +37,14 @@ exec fish
 
 `setup.sh` is idempotent (safe to re-run) and does, in order:
 
-1. Copies `images/` to `~/Pictures/Wallpapers` and `~/Pictures/Icons`.
-2. Restows all packages (`stow -R`) into `$HOME`.
-3. Makes the termfilechooser `yazi-wrapper.sh` executable.
-4. Restarts the portal stack, `pipewire` / `pipewire-pulse` / `wireplumber`,
+1. Backs up live files that are **not** tracked in this repo
+   (`fish_variables`, Sunshine credentials/state, OpenTabletDriver's stale
+   `Settings.json`, logs, plugin dirs, niri `*.backup*`) to
+   `~/.dotfiles-backup/<timestamp>/` — prune old backups yourself.
+2. Wipes the 17 app config dirs owned by the packages below.
+3. Copies `images/` to `~/Pictures/Wallpapers` and `~/Pictures/Icons`.
+4. Restows all packages (`stow -R`) into `$HOME`.
+5. Makes the termfilechooser `yazi-wrapper.sh` executable.
+6. Restarts the portal stack, `pipewire` / `pipewire-pulse` / `wireplumber`,
    and `opentabletdriver` (every call guarded — missing units never abort it).
-5. Reloads noctalia (`noctalia msg config-reload`, no session kill).
+7. Reloads noctalia (`noctalia msg config-reload`, no session kill).
