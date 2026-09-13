@@ -261,6 +261,7 @@ install.sh — resumo
     - drivers de GPU não serão instalados
     - setup.sh fará backup dos arquivos KEEP antes de remover configs
     - UFW será resetado
+    - DM atual não é interrompido; troca para greetd vale após reboot
     - Docker receberá integração UFW quando ufw-docker estiver disponível
     - instalação AUR é unattended (--skipreview)
 
@@ -859,14 +860,18 @@ done
 
 log "configurando greetd como display manager"
 
+if [[ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ]]; then
+    warn "sessão gráfica detectada — o DM atual NÃO será interrompido; a troca para greetd vale após reboot."
+fi
+
 for dm in sddm gdm lightdm ly lxdm; do
     if systemctl is-enabled "$dm.service" >/dev/null 2>&1; then
-        warn "desabilitando $dm"
+        warn "desabilitando $dm (efeito após reboot)"
 
         sudo systemctl \
             --no-ask-password \
             --no-pager \
-            disable "$dm.service" --now \
+            disable "$dm.service" \
             2>/dev/null || true
     fi
 done
