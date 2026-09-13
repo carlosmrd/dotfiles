@@ -44,4 +44,9 @@
     "light": "One Light",
     "dark": "Noctalia Dark",
   },
+
+  // AI
+  "agent": {
+    "enabled": false
+  }
 }
