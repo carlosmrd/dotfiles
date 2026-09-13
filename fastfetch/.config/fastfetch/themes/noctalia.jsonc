@@ -1,0 +1,15 @@
+{
+  "display": {
+    "color": {
+      "keys": "#ffb4ca",
+      "title": "#f4b6c7"
+    },
+    "percent": {
+      "color": {
+        "green": "#ffba8a",
+        "yellow": "#ffb1c8",
+        "red": "#ffb4ab"
+      }
+    }
+  }
+}

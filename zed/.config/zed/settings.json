@@ -1,0 +1,47 @@
+{
+  // Network
+  "proxy": "",
+
+  // Interface
+  "tab_bar": {
+    "show_pinned_tabs_in_separate_row": false
+  },
+  "tabs": {
+    "file_icons": true,
+    "git_status": true
+  },
+  "title_bar": {
+    "show_user_picture": false,
+    "show_menus": false,
+    "show_branch_status_icon": true
+  },
+  "buffer_line_height": "comfortable",
+  "use_system_path_prompts": true,
+
+  // Editing
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000
+    }
+  },
+  "cli_default_open_behavior": "existing_window",
+  "vim_mode": false,
+
+  // Fonts
+  "buffer_font_size": 16.0,
+  "ui_font_family": "IBM Plex Sans",
+  "buffer_font_family": "JetBrains Mono",
+
+  // Terminal
+  "terminal": {
+    "font_size": 16.0,
+    "font_family": "JetBrains Mono"
+  },
+
+  // Theme
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Noctalia Dark",
+  },
+}

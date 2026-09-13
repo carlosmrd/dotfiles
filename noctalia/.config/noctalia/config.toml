@@ -1,0 +1,188 @@
+# Version
+config_version = 14
+
+# Bar
+[bar.default]
+start = [
+    "launcher",
+    "spacer_1",
+    "taskbar",
+]
+center = [
+    "media",
+    "spacer_2",
+    "workspaces",
+    "spacer_3",
+    "clock",
+    "spacer_4",
+    "weather",
+]
+end = [
+    "tray",
+    "clipboard",
+    "notifications",
+    "volume",
+    "battery",
+    "session",
+]
+background_opacity = 0.8
+capsule_border = "primary"
+capsule_radius = 8
+margin_edge = 8
+margin_ends = 8
+padding = 16
+radius = 8
+radius_bottom_left = 8
+radius_bottom_right = 8
+radius_top_left = 8
+radius_top_right = 8
+thickness = 32
+
+# Shortcuts
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "clipboard"
+
+[[control_center.shortcuts]]
+type = "session"
+
+# Dock
+[dock]
+background_opacity = 0.8
+cross_axis_padding = 2
+enabled = false
+icon_size = 36
+item_spacing = 0
+launcher_position = "end"
+pinned = [ "Alacritty", "firefox", "discord", "steam", "spotify-launcher" ]
+radius = 8
+radius_bottom_left = 8
+radius_bottom_right = 8
+radius_top_left = 8
+radius_top_right = 8
+
+# Plugins
+[plugins]
+enabled = []
+
+# Shell
+[shell]
+avatar_path = "/home/carlos/Pictures/Icons/Eblana.jpg"
+corner_radius_scale = 1.0
+font_family = "IBM Plex Sans"
+
+    [shell.launcher]
+    auto_paste = "off"
+    compact = true
+
+    [shell.mpris]
+    blacklist = [ "firefox" ]
+
+    [shell.panel]
+    borders = false
+    transparency_mode = "soft"
+    launcher_placement = "floating"
+    clipboard_placement = "floating"
+    control_center_placement = "floating"
+    wallpaper_placement = "floating"
+    session_placement = "floating"
+    polkit_placement = "floating"
+    launcher_position = "auto"
+    clipboard_position = "auto"
+    control_center_position = "auto"
+    wallpaper_position = "auto"
+    polkit_position = "auto"
+    open_near_click_clipboard = true
+    open_near_click_launcher = true
+    open_near_click_session = true
+    open_near_click_wallpaper = true
+
+# Theme
+[theme]
+builtin = "Noctalia"
+mode = "dark"
+source = "wallpaper"
+wallpaper_scheme = "m3-content"
+
+    [theme.templates]
+    builtin_ids = [ "btop", "gtk3", "gtk4", "kitty", "niri", "qt" ]
+    community_ids = [ "opencode", "pywalfox-beta4", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "fastfetch", "yazi" ]
+
+# Wallpaper
+[wallpaper]
+directory = "~/Pictures/Wallpapers"
+
+    [wallpaper.default]
+    path = "/home/carlos/Pictures/Wallpapers/Remielle.png"
+
+    [wallpaper.automation]
+    enabled = false
+    interval_seconds = 300
+    order = "random"
+
+# Notifications
+[notification]
+background_opacity = 0.8
+
+# OSD
+[osd]
+background_opacity = 0.8
+
+# Widgets
+[widget.launcher]
+glyph = "rocket"
+
+[widget.spacer_1]
+length = 24
+type = "spacer"
+
+[widget.taskbar]
+icon_scale = 1.0
+item_spacing = 4
+show_active_indicator = true
+show_window_title = false
+
+[widget.media]
+hide_when_no_media = true
+max_length = 200
+
+[widget.spacer_2]
+length = 24
+type = "spacer"
+
+[widget.workspaces]
+active_pill_size = 1.0
+anchor = true
+style = "minimal"
+
+[widget.spacer_3]
+length = 24
+type = "spacer"
+
+[widget.clock]
+format = "{:%H:%M • %a , %d/%m}"
+
+[widget.spacer_4]
+length = 24
+type = "spacer"
+
+[widget.weather]
+show_condition = false
+
+[widget.tray]
+drawer = false
+hidden = [ "arch-update-tray" ]
+hide_passive = true
+pinned = []
+
+[widget.volume]
+show_label = false
+
+[widget.battery]
+enabled = false
+show_label = false

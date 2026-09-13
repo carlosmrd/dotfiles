@@ -1,0 +1,19 @@
+# Logs and runtime state
+**/*.log
+**/logs/
+**/OpenTabletDriver/Logs/
+
+# Secrets and credentials
+**/sunshine_state.json
+**/credentials/
+**/sizes.ors
+
+# Machine-generated state
+**/fish_variables
+**/prefixes/
+**/*.backup*
+**/*.bak
+
+# OS/editor noise
+.DS_Store
+**/.DS_Store

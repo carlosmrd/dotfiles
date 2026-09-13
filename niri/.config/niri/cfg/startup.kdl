@@ -1,0 +1,22 @@
+// Environment
+environment {
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    QT_QPA_PLATFORM "wayland"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+    XDG_CURRENT_DESKTOP "niri"
+    XDG_SESSION_TYPE "wayland"
+}
+
+// Services
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+
+// Shell
+spawn-at-startup "noctalia"
+
+// Apps
+spawn-sh-at-startup "steam -silent"
+spawn-sh-at-startup "sleep 2 && discord"
+spawn-sh-at-startup "sleep 8 && spotify-launcher"
+spawn-sh-at-startup "sleep 8 && openrgb --profile Purple"

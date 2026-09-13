@@ -1,0 +1,9 @@
+include "./cfg/startup.kdl"
+include "./cfg/input.kdl"
+include "./cfg/binds.kdl"
+include "./cfg/appearance.kdl"
+include "./cfg/outputs.kdl"
+include "./cfg/rules.kdl"
+include "./cfg/system.kdl"
+
+include "noctalia.kdl"

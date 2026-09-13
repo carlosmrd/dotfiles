@@ -1,0 +1,24 @@
+input {
+    // Keyboard
+    keyboard {
+        numlock
+    }
+
+    // Touchpad
+    touchpad {
+        dwt
+        tap
+        scroll-method "two-finger"
+        accel-profile "flat"
+        accel-speed 0.0
+    }
+
+    // Mouse
+    mouse {
+        accel-profile "flat"
+        accel-speed 0.0
+    }
+
+    // Workspaces
+    workspace-auto-back-and-forth
+}

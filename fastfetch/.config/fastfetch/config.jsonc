@@ -1,0 +1,90 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+
+  // Logo
+  "logo": {
+    "source": "~/.config/fastfetch/logo.txt",
+    "padding": {
+      "top": 0,
+      "right": 2
+    },
+    "color": {
+      "1": "white",
+      "2": "white"
+    }
+  },
+
+  // Style
+  "display": {
+    "separator": ": ",
+    "color": {
+      "keys": "#ffb4ca",
+      "title": "#f4b6c7"
+    },
+    "percent": {
+      "type": 9,
+      "color": {
+        "green": "#ffba8a",
+        "yellow": "#ffb1c8",
+        "red": "#ffb4ab"
+      }
+    }
+  },
+
+  // Modules
+  "modules": [
+    "title",
+    {
+      "type": "custom",
+      "format": "──────────────────────────────────────────"
+    },
+
+    // System
+    "os",
+    "kernel",
+    "uptime",
+    "packages",
+    "shell",
+    {
+      "type": "custom",
+      "format": "──────────────────────────────────────────"
+    },
+
+    // Desktop
+    "de",
+    "wm",
+    "terminal",
+    {
+      "type": "terminalfont",
+      "format": "{name}"
+    },
+    {
+      "type": "custom",
+      "format": "──────────────────────────────────────────"
+    },
+
+    // Hardware
+    {
+      "type": "board",
+      "format": "{name}"
+    },
+    {
+      "type": "cpu",
+      "format": "{name}"
+    },
+    {
+      "type": "gpu",
+      "format": "{name}",
+      "hideType": "integrated"
+    },
+    "memory",
+    {
+      "type": "custom",
+      "format": "──────────────────────────────────────────"
+    },
+
+    // Footer
+    "colors",
+    "break"
+  ]
+}

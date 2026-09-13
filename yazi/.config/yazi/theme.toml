@@ -1,0 +1,16 @@
+# Flavor
+[flavor]
+dark = "noctalia"
+light = "noctalia"
+
+# Manager
+[mgr]
+border_symbol = "│"
+border_style = { fg = "#ffb4ca" }
+
+# Dialogs
+[confirm]
+border = { fg = "#ffb4ca" }
+
+[pick]
+border = { fg = "#ffb4ca" }

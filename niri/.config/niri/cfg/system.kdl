@@ -1,0 +1,21 @@
+// Windows
+prefer-no-csd
+
+// Screenshots
+screenshot-path null
+
+// Debug
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// Overlay
+hotkey-overlay {
+    skip-at-startup
+}
+
+// Cursor
+cursor {
+    xcursor-theme "manhattan-cafe"
+    xcursor-size 24
+}

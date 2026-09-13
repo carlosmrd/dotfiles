@@ -1,0 +1,18 @@
+// Outputs
+output "HDMI-A-1" {
+    mode "1920x1080@60.000"
+    position x=1920 y=0
+}
+
+output "HDMI-A-2" {
+    off
+    mode "3840x2160@60.000"
+    scale 2.0
+    position x=-1920 y=0
+}
+
+output "DP-1" {
+    focus-at-startup
+    mode "1920x1080@143.981"
+    position x=0 y=0
+}
