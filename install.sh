@@ -150,6 +150,25 @@ if ! grep -A1 '^\[multilib\]' "$PACMAN_CONF" | grep -q '^Include ='; then
 fi
 
 # ---------------------------------------------------------------------------
+# Relógio do sistema (assinaturas falham com data errada)
+# ---------------------------------------------------------------------------
+
+log "sincronizando relógio do sistema"
+
+sudo timedatectl set-ntp true 2>/dev/null || true
+sudo systemctl enable --now systemd-timesyncd 2>/dev/null || true
+
+for i in $(seq 1 20); do
+    if [[ "$(timedatectl show -p NTPSynchronized --value 2>/dev/null)" == "yes" ]]; then
+        break
+    fi
+    sleep 2
+done
+
+[[ "$(timedatectl show -p NTPSynchronized --value 2>/dev/null)" == "yes" ]] ||
+    warn "relógio pode estar dessincronizado; assinaturas de pacotes podem falhar."
+
+# ---------------------------------------------------------------------------
 # Ferramentas necessárias antes do CachyOS
 # ---------------------------------------------------------------------------
 
@@ -339,6 +358,11 @@ else
         "$MIRROR/$V4_PKG" \
         "$MIRROR/$PACMAN_PKG"
 
+    log "populando chaves archlinux e cachyos"
+
+    sudo pacman-key --populate archlinux cachyos ||
+        die "falha ao popular chaves archlinux/cachyos."
+
     REPO_FRAGMENT="$(mktemp)"
 
     case "$ISA_REPO" in
@@ -422,7 +446,11 @@ fi
 
 log "sincronizando e atualizando o sistema"
 
-sudo pacman -Syu --noconfirm
+if ! sudo pacman -Syu --noconfirm; then
+    warn "sincronização normal falhou — forçando re-download das bases."
+    sudo pacman -Syyu --noconfirm ||
+        die "falha ao sincronizar/atualizar o sistema."
+fi
 
 # ---------------------------------------------------------------------------
 # Kernel headers
