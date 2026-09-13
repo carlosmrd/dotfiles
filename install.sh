@@ -116,11 +116,50 @@ try_import_cachyos_key() {
     return 0
 }
 
+latest_pkg() {
+    local regex="$1"
+    echo "$LISTING" |
+        grep -oE "$regex" |
+        sort -V |
+        tail -n1 || true
+}
+
+fetch_cachyos_listing() {
+    MIRROR="https://mirror.cachyos.org/repo/x86_64/cachyos"
+    LISTING="$(curl -fsSL --retry 3 --retry-delay 5 --connect-timeout 15 --max-time 90 "$MIRROR/" 2>/dev/null || true)"
+    [[ -n "$LISTING" ]]
+}
+
 repair_cachyos_trust() {
     log "reparando confiança nas chaves CachyOS"
 
+    sudo gpgconf --homedir /etc/pacman.d/gnupg --kill gpg-agent 2>/dev/null || true
+    sudo rm -f /etc/pacman.d/gnupg/*.lock /etc/pacman.d/gnupg/private-keys-v1.d/*.lock 2>/dev/null || true
+    sudo rm -f /var/lib/pacman/sync/cachyos* 2>/dev/null || true
+
     try_import_cachyos_key ||
         warn "re-importação da chave CachyOS falhou."
+
+    if fetch_cachyos_listing; then
+        local r_key="" r_ml="" r_v3="" r_v4=""
+        r_key="$(latest_pkg 'cachyos-keyring-[0-9][^"<> ]*\.pkg\.tar\.zst')"
+        r_ml="$(latest_pkg 'cachyos-mirrorlist-[0-9][^"<> ]*\.pkg\.tar\.zst')"
+        r_v3="$(latest_pkg 'cachyos-v3-mirrorlist-[0-9][^"<> ]*\.pkg\.tar\.zst')"
+        r_v4="$(latest_pkg 'cachyos-v4-mirrorlist-[0-9][^"<> ]*\.pkg\.tar\.zst')"
+        if [[ -n "$r_key" && -n "$r_ml" && -n "$r_v3" && -n "$r_v4" ]]; then
+            log "reinstalando keyring/mirrorlists do espelho (sem sincronizar DBs)"
+            sudo pacman -U --noconfirm \
+                "$MIRROR/$r_key" \
+                "$MIRROR/$r_ml" \
+                "$MIRROR/$r_v3" \
+                "$MIRROR/$r_v4" ||
+                warn "reinstalação do keyring via URL falhou."
+        else
+            warn "não foi possível resolver keyring/mirrorlists no espelho."
+        fi
+    else
+        warn "não foi possível obter o diretório de pacotes CachyOS."
+    fi
 
     sudo pacman-key --populate archlinux cachyos 2>/dev/null ||
         warn "populate de chaves archlinux/cachyos falhou."
@@ -228,6 +267,12 @@ for i in $(seq 1 20); do
     sleep 2
 done
 
+SYS_YEAR="$(date +%Y)"
+
+if [[ "$SYS_YEAR" -lt 2024 || "$SYS_YEAR" -gt 2035 ]]; then
+    die "relógio do sistema em $SYS_YEAR — corrija data/hora/BIOS antes de continuar (assinaturas exigem data válida)."
+fi
+
 [[ "$(timedatectl show -p NTPSynchronized --value 2>/dev/null)" == "yes" ]] ||
     warn "relógio pode estar dessincronizado; assinaturas de pacotes podem falhar."
 
@@ -240,8 +285,22 @@ log "instalando ferramentas de bootstrap do Arch"
 if ! sudo pacman -Sy --needed --noconfirm archlinux-keyring; then
     warn "sincronização inicial falhou — reparando confiança CachyOS e repetindo com refresh forçado."
     repair_cachyos_trust
-    sudo pacman -Syy --needed --noconfirm archlinux-keyring ||
+    if ! sudo pacman -Syy --needed --noconfirm archlinux-keyring; then
+        warn "diagnóstico: data UTC do sistema: $(date -u 2>/dev/null || echo desconhecida)"
+        warn "diagnóstico: NTP sincronizado: $(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo desconhecido)"
+        if sudo pacman-key --list-keys F3B607488DB35A47 >/dev/null 2>&1; then
+            warn "diagnóstico: chave CachyOS presente no keyring."
+        else
+            warn "diagnóstico: chave CachyOS AUSENTE no keyring."
+        fi
+        SIGLEVEL_LINE="$(grep -E '^[[:space:]]*SigLevel' /etc/pacman.conf 2>/dev/null | head -n1 || true)"
+        [[ -n "$SIGLEVEL_LINE" ]] || SIGLEVEL_LINE="(não definido: usa padrão)"
+        warn "diagnóstico: SigLevel: $SIGLEVEL_LINE"
+        SYNC_FILES="$(ls /var/lib/pacman/sync/ 2>/dev/null | tr '\n' ' ' || true)"
+        [[ -n "$SYNC_FILES" ]] || SYNC_FILES="(vazio/inacessível)"
+        warn "diagnóstico: DBs em /var/lib/pacman/sync: $SYNC_FILES"
         die "falha ao atualizar archlinux-keyring; verifique rede/espelhos."
+    fi
 fi
 
 sudo pacman -Syu --needed --noconfirm \
@@ -311,22 +370,10 @@ if grep -qE '^\[cachyos' "$PACMAN_CONF"; then
 else
     log "configurando repositórios CachyOS ($ISA_REPO)"
 
-    MIRROR="https://mirror.cachyos.org/repo/x86_64/cachyos"
-
     log "obtendo lista de pacotes CachyOS do espelho"
 
-    LISTING="$(curl -fsSL --retry 3 --retry-delay 5 --connect-timeout 15 --max-time 90 "$MIRROR/" 2>/dev/null || true)"
-
-    [[ -n "$LISTING" ]] ||
+    fetch_cachyos_listing ||
         die "não foi possível obter o diretório de pacotes CachyOS."
-
-    latest_pkg() {
-        local regex="$1"
-        echo "$LISTING" |
-            grep -oE "$regex" |
-            sort -V |
-            tail -n1 || true
-    }
 
     KEYRING_PKG="$(
         latest_pkg 'cachyos-keyring-[0-9][^"<> ]*\.pkg\.tar\.zst'
