@@ -165,6 +165,46 @@ repair_cachyos_trust() {
         warn "populate de chaves archlinux/cachyos falhou."
 }
 
+nuclear_trust_rebuild() {
+    log "reconstruindo /etc/pacman.d/gnupg do zero"
+
+    local gpg_backup="/etc/pacman.d/gnupg.bak-$(date +%Y%m%d-%H%M%S)"
+
+    sudo cp -a /etc/pacman.d/gnupg "$gpg_backup" ||
+        die "falha ao fazer backup de /etc/pacman.d/gnupg."
+
+    log "backup do keyring anterior em $gpg_backup"
+
+    sudo rm -rf /etc/pacman.d/gnupg ||
+        die "falha ao limpar /etc/pacman.d/gnupg."
+
+    sudo pacman-key --init ||
+        die "falha ao inicializar pacman-key."
+
+    sudo pacman-key --populate archlinux ||
+        die "falha ao popular chaves archlinux."
+
+    try_import_cachyos_key ||
+        die "falha ao importar chave CachyOS após reconstrução."
+
+    if fetch_cachyos_listing; then
+        local n_key=""
+        n_key="$(latest_pkg 'cachyos-keyring-[0-9][^"<> ]*\.pkg\.tar\.zst')"
+        if [[ -n "$n_key" ]]; then
+            log "reinstalando cachyos-keyring do espelho"
+            sudo pacman -U --noconfirm "$MIRROR/$n_key" ||
+                die "falha ao instalar cachyos-keyring após reconstrução."
+        else
+            die "cachyos-keyring não encontrado no mirror."
+        fi
+    else
+        die "não foi possível obter o diretório de pacotes CachyOS."
+    fi
+
+    sudo pacman-key --populate archlinux cachyos ||
+        die "falha ao popular chaves após reconstrução."
+}
+
 # ---------------------------------------------------------------------------
 # Pré-validação
 # ---------------------------------------------------------------------------
@@ -282,25 +322,46 @@ fi
 
 log "instalando ferramentas de bootstrap do Arch"
 
-if ! sudo pacman -Sy --needed --noconfirm archlinux-keyring; then
+SYNC_OK=0
+
+if sudo pacman -Sy --needed --noconfirm archlinux-keyring; then
+    SYNC_OK=1
+fi
+
+if [[ "$SYNC_OK" -eq 0 ]]; then
     warn "sincronização inicial falhou — reparando confiança CachyOS e repetindo com refresh forçado."
     repair_cachyos_trust
-    if ! sudo pacman -Syy --needed --noconfirm archlinux-keyring; then
-        warn "diagnóstico: data UTC do sistema: $(date -u 2>/dev/null || echo desconhecida)"
-        warn "diagnóstico: NTP sincronizado: $(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo desconhecido)"
-        if sudo pacman-key --list-keys F3B607488DB35A47 >/dev/null 2>&1; then
-            warn "diagnóstico: chave CachyOS presente no keyring."
-        else
-            warn "diagnóstico: chave CachyOS AUSENTE no keyring."
-        fi
-        SIGLEVEL_LINE="$(grep -E '^[[:space:]]*SigLevel' /etc/pacman.conf 2>/dev/null | head -n1 || true)"
-        [[ -n "$SIGLEVEL_LINE" ]] || SIGLEVEL_LINE="(não definido: usa padrão)"
-        warn "diagnóstico: SigLevel: $SIGLEVEL_LINE"
-        SYNC_FILES="$(ls /var/lib/pacman/sync/ 2>/dev/null | tr '\n' ' ' || true)"
-        [[ -n "$SYNC_FILES" ]] || SYNC_FILES="(vazio/inacessível)"
-        warn "diagnóstico: DBs em /var/lib/pacman/sync: $SYNC_FILES"
-        die "falha ao atualizar archlinux-keyring; verifique rede/espelhos."
+    if sudo pacman -Syy --needed --noconfirm archlinux-keyring; then
+        SYNC_OK=1
     fi
+fi
+
+if [[ "$SYNC_OK" -eq 0 ]]; then
+    warn "reparo leve falhou — reconstruindo keyring do zero."
+    nuclear_trust_rebuild
+    if sudo pacman -Syy --needed --noconfirm archlinux-keyring; then
+        SYNC_OK=1
+    fi
+fi
+
+if [[ "$SYNC_OK" -eq 0 ]]; then
+    warn "diagnóstico: data UTC do sistema: $(date -u 2>/dev/null || echo desconhecida)"
+    warn "diagnóstico: NTP sincronizado: $(timedatectl show -p NTPSynchronized --value 2>/dev/null || echo desconhecido)"
+    if sudo pacman-key --list-keys F3B607488DB35A47 >/dev/null 2>&1; then
+        warn "diagnóstico: chave CachyOS presente no keyring."
+    else
+        warn "diagnóstico: chave CachyOS AUSENTE no keyring."
+    fi
+    SIGLEVEL_LINE="$(grep -E '^[[:space:]]*SigLevel' /etc/pacman.conf 2>/dev/null | head -n1 || true)"
+    [[ -n "$SIGLEVEL_LINE" ]] || SIGLEVEL_LINE="(não definido: usa padrão)"
+    warn "diagnóstico: SigLevel: $SIGLEVEL_LINE"
+    SYNC_FILES="$(ls /var/lib/pacman/sync/ 2>/dev/null | tr '\n' ' ' || true)"
+    [[ -n "$SYNC_FILES" ]] || SYNC_FILES="(vazio/inacessível)"
+    warn "diagnóstico: DBs em /var/lib/pacman/sync: $SYNC_FILES"
+    DISK_INFO="$(df -h /var /etc 2>/dev/null | tail -n +2 | tr '\n' ' ' || true)"
+    [[ -n "$DISK_INFO" ]] || DISK_INFO="(indisponível)"
+    warn "diagnóstico: disco: $DISK_INFO"
+    die "falha ao atualizar archlinux-keyring; verifique rede/espelhos (proxy transparente também pode corromper downloads)."
 fi
 
 sudo pacman -Syu --needed --noconfirm \
