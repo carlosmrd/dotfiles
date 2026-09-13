@@ -23,19 +23,21 @@ ISA_PREVIEW="x86-64-v3"
 if /lib/ld-linux-x86-64.so.2 --help 2>/dev/null | grep -q "x86-64-v4 (supported, searched)"; then
   ISA_PREVIEW="x86-64-v4"
 fi
-GPU_PREVIEW="$(lspci 2>/dev/null | grep -i nvidia | head -n1 || true)"
-[[ -z "$GPU_PREVIEW" ]] && GPU_PREVIEW="nenhuma NVIDIA detectada"
+GPU_PREVIEW="$(lspci 2>/dev/null | grep -iE 'vga|3d|display' | head -n1 || true)"
+[[ -z "$GPU_PREVIEW" ]] && GPU_PREVIEW="GPU não detectada"
 cat <<EOF
 install.sh — resumo (nada foi alterado ainda):
   usuário-alvo (greeter/docker/user-services): $TARGET_USER
   CPU ISA CachyOS: $ISA_PREVIEW | GPU: $GPU_PREVIEW
   vai fazer: habilitar multilib + repos CachyOS, instalar paru,
     blocos pacman + AUR (--skipreview, sem pausa),
-    greetd como DM (desabilita sddm/gdm/lightdm/ly),
+    greetd como DM (desabilita sddm/gdm/lightdm/ly; sobrescreve config.toml),
     greeter.toml niri + cursor Adwaita,
     UFW padrão + SSH (só-chave se houver authorized_keys),
-    NVIDIA open + lib32, services system/user, stow via setup.sh.
-  reboot recomendado ao final (NVIDIA + greetd).
+    headers do kernel em uso, services system/user, stow via setup.sh.
+  setup.sh APAGA 17 dirs de config e recria via stow (só KEEP tem backup).
+  UFW reset apaga regras atuais (backup .bak); sem drivers de GPU (manual).
+  reboot recomendado ao final (greetd).
 EOF
 read -rp "ENTER para começar unattended (Ctrl-C cancela)... " _
 PACMAN_CONF="/etc/pacman.conf"
@@ -142,16 +144,23 @@ else
     fi
   fi
 fi
+KERN_REL="$(uname -r)"
+KERN_HEADERS="linux-headers"
+if [[ "$KERN_REL" == *cachyos* ]]; then
+  KERN_HEADERS="linux-cachyos-headers"
+elif [[ "$KERN_REL" == *lts* ]]; then
+  KERN_HEADERS="linux-lts-headers"
+elif [[ "$KERN_REL" == *zen* ]]; then
+  KERN_HEADERS="linux-zen-headers"
+fi
 BASE_PKGS=(
   wpa_supplicant networkmanager ufw ufw-extras openssh reflector
   nano vim git stow wget htop which xdg-utils curl
   pciutils
   pipewire pipewire-pulse pipewire-alsa pipewire-jack wireplumber pavucontrol playerctl
   libsecret gnome-keyring polkit-gnome polkit
-  nvidia-open nvidia-utils egl-wayland libva-nvidia-driver opencl-nvidia
   ananicy-cpp cachyos-ananicy-rules bpftune-git
   bluez bluez-utils bluez-hid2hci bluez-libs bluez-obex
-  power-profiles-daemon
   avahi cups
   systemd-timesyncd systemd-resolved
   python python-pip rust go tailscale
@@ -159,12 +168,12 @@ BASE_PKGS=(
   docker docker-buildx docker-compose
   niri greetd noctalia noctalia-greeter
   unzip unrar snapper
-  base-devel linux-headers
+  base-devel "$KERN_HEADERS"
   fish eza bat expac jq libnotify
   cachyos-rate-mirrors
   xdg-desktop-portal xdg-desktop-portal-gtk accountsservice
-  gamemode lib32-gamemode lib32-nvidia-utils lib32-opencl-nvidia lib32-vulkan-icd-loader lib32-mangohud
-  nvidia-settings vulkan-icd-loader vulkan-tools 7zip
+  gamemode lib32-gamemode lib32-vulkan-icd-loader lib32-mangohud
+  vulkan-icd-loader vulkan-tools 7zip
   noto-fonts ttf-jetbrains-mono-nerd
 )
 APP_PKGS=(
@@ -174,10 +183,11 @@ APP_PKGS=(
   gamescope goverlay mangohud limine-snapper-sync zed libreoffice-fresh qbittorrent yazi
   wine wine-mono wine-gecko winetricks umu-launcher protontricks
 )
-if lspci 2>/dev/null | grep -qi nvidia; then
-  log "GPU NVIDIA detectada — nvidia-open é o driver correto (Turing+)"
+GPU_LINE="$(lspci 2>/dev/null | grep -iE 'vga|3d|display' | head -n1 || true)"
+if [[ -n "$GPU_LINE" ]]; then
+  log "GPU: $GPU_LINE (drivers de GPU não instalados por este script)"
 else
-  warn "nenhuma GPU NVIDIA detectada via lspci — instalando mesmo assim (lista explícita)"
+  warn "GPU não detectada via lspci (drivers de GPU não instalados por este script)"
 fi
 log "instalando pacotes base+complementos (${#BASE_PKGS[@]})"
 if ! sudo pacman -S --needed --noconfirm "${BASE_PKGS[@]}"; then
@@ -270,11 +280,10 @@ sudo loginctl enable-linger "$TARGET_USER" 2>/dev/null || true
 sudo -u "$TARGET_USER" systemctl --user --no-ask-password --no-pager enable gnome-keyring-daemon.socket 2>/dev/null || true
 SYS_SERVICES=(
   NetworkManager ufw sshd bluetooth
-  power-profiles-daemon ananicy-cpp bpftune
+  ananicy-cpp bpftune
   tailscaled docker docker.socket
   systemd-timesyncd systemd-resolved
   avahi-daemon cups cups.socket
-  nvidia-suspend nvidia-resume nvidia-hibernate
 )
 SYS_TIMERS=(
   cachyos-rate-mirrors.timer
@@ -285,7 +294,11 @@ log "habilitando serviços de sistema"
 for s in "${SYS_SERVICES[@]}"; do
   sudo systemctl --no-ask-password --no-pager enable --now "$s" 2>/dev/null || warn "falha ao habilitar $s"
 done
-sudo systemctl --no-ask-password --no-pager enable --now nvidia-powerd 2>/dev/null || true
+if systemctl is-enabled tlp.service >/dev/null 2>&1 || systemctl is-enabled auto-cpufreq.service >/dev/null 2>&1; then
+  warn "tlp/auto-cpufreq ativo — pulando power-profiles-daemon (conflito)"
+else
+  sudo systemctl --no-ask-password --no-pager enable --now power-profiles-daemon 2>/dev/null || warn "falha ao habilitar power-profiles-daemon"
+fi
 for t in "${SYS_TIMERS[@]}"; do
   sudo systemctl --no-ask-password --no-pager enable --now "$t" 2>/dev/null || warn "timer $t indisponível (ok em Arch puro)"
 done
@@ -312,12 +325,17 @@ if sudo -u "$TARGET_USER" systemctl --user list-unit-files 2>/dev/null | grep -q
   sudo -u "$TARGET_USER" systemctl --user --no-ask-password --no-pager enable --now arch-update.timer 2>/dev/null || true
 fi
 log "aplicando UFW padrão (deny in / allow out / allow ssh)"
+backup_once /etc/ufw/user.rules
+backup_once /etc/ufw/user6.rules
 sudo ufw --force reset
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow ssh
 sudo ufw --force enable
 sudo systemctl --no-ask-password --no-pager enable --now ufw
+if systemctl is-active docker.service >/dev/null 2>&1; then
+  sudo systemctl --no-ask-password --no-pager restart docker 2>/dev/null || true
+fi
 log "configurando sshd (só-chave se houver authorized_keys)"
 SSHD_CONF="/etc/ssh/sshd_config.d/10-hardened.conf"
 backup_once /etc/ssh/sshd_config
@@ -341,10 +359,6 @@ EOF
   sudo systemctl --no-ask-password --no-pager enable --now sshd
   warn "sem $USER_HOME/.ssh/authorized_keys — mantido login por senha; adicione a chave e re-rode"
 fi
-log "NVIDIA: nvidia-open + nvidia-utils + lib32 já instalados acima"
-if ! sudo grep -qr "nvidia_drm" /etc/modprobe.d/ /etc/kernel/cmdline /etc/limine.conf /boot 2>/dev/null; then
-  warn "considere nvidia_drm.modeset=1 nvidia_drm.fbdev=1 no bootloader (reboot p/ valer)"
-fi
 if pacman -Q fish-done >/dev/null 2>&1; then
   log "done.fish OK (pacote fish-done $(pacman -Q fish-done | cut -d' ' -f2))"
 else
@@ -358,11 +372,12 @@ Concluído. Próximos passos manuais:
   1. Sync greeter<->noctalia: abra Noctalia Settings → Security → Noctalia Greeter → Sync Now
      (requer polkit/pkexec + accountsservice, já instalados), depois: sudo systemctl restart greetd
   2. sbctl: Secure Boot é manual (sbctl status / enroll). sunshine tailscale: 'tailscale up' manual.
-  3. Reboot recomendado (NVIDIA + greetd): sudo reboot
-  4. Depois: exec fish
+  3. Drivers de GPU não instalados por este script — instale manualmente p/ sua GPU.
+  4. Reboot recomendado (greetd): sudo reboot
+  5. Depois: exec fish
 
 Verificação rápida:
-  pacman -Q paru niri noctalia-greeter fish-done lib32-nvidia-utils
+  pacman -Q paru niri noctalia-greeter fish-done
   systemctl is-enabled greetd ufw sshd bluetooth docker tailscaled
   systemctl --user is-enabled playerctld wireplumber
   cat $GREETD_CONF
