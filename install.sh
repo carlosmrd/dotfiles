@@ -23,6 +23,8 @@ log()  { printf '\033[1;32m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m-->\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mERROR:\033[0m %s\n' "$*" >&2; exit 1; }
 
+trap 'die "erro (exit $?) em: $BASH_COMMAND (linha $LINENO)"' ERR
+
 command -v sudo >/dev/null || die "sudo não encontrado."
 command -v pacman >/dev/null || die "pacman não encontrado."
 command -v systemctl >/dev/null || die "systemctl não encontrado."
@@ -161,11 +163,14 @@ sudo pacman -Syu --needed --noconfirm \
     curl \
     pciutils \
     ca-certificates \
-    git
+    git \
+    gnupg
 
 # ---------------------------------------------------------------------------
 # Detecção da arquitetura da CPU
 # ---------------------------------------------------------------------------
+
+log "detectando arquitetura da CPU e GPU"
 
 CPU_MARCH="$(
     gcc -march=native -Q --help=target 2>/dev/null |
@@ -217,7 +222,10 @@ else
     log "configurando repositórios CachyOS ($ISA_REPO)"
 
     MIRROR="https://mirror.cachyos.org/repo/x86_64/cachyos"
-    LISTING="$(curl -fsSL "$MIRROR/" 2>/dev/null || true)"
+
+    log "obtendo lista de pacotes CachyOS do espelho"
+
+    LISTING="$(curl -fsSL --retry 3 --retry-delay 5 --connect-timeout 15 --max-time 90 "$MIRROR/" 2>/dev/null || true)"
 
     [[ -n "$LISTING" ]] ||
         die "não foi possível obter o diretório de pacotes CachyOS."
@@ -265,14 +273,28 @@ else
     [[ -n "$PACMAN_PKG" ]] ||
         die "pacman do CachyOS não encontrado no mirror."
 
-    if ! sudo timeout 60 pacman-key \
-        --recv-keys F3B607488DB35A47 \
-        --keyserver keyserver.ubuntu.com; then
+    log "recebendo chave CachyOS (tentativa 1/3: keyserver.ubuntu.com)"
 
-        sudo timeout 60 pacman-key \
+    if ! sudo timeout 30 pacman-key \
+        --recv-keys F3B607488DB35A47 \
+        --keyserver keyserver.ubuntu.com \
+        --keyserver-options timeout=10; then
+
+        log "recebendo chave CachyOS (tentativa 2/3: keys.openpgp.org)"
+
+        if ! sudo timeout 30 pacman-key \
             --recv-keys F3B607488DB35A47 \
-            --keyserver keys.openpgp.org ||
-            die "falha ao receber a chave CachyOS."
+            --keyserver keys.openpgp.org \
+            --keyserver-options timeout=10; then
+
+            log "recebendo chave CachyOS (tentativa 3/3: keyserver.ubuntu.com:80)"
+
+            sudo timeout 30 pacman-key \
+                --recv-keys F3B607488DB35A47 \
+                --keyserver hkp://keyserver.ubuntu.com:80 \
+                --keyserver-options timeout=10 ||
+                die "falha ao receber a chave CachyOS nos 3 keyservers."
+        fi
     fi
 
     sudo pacman-key --lsign-key F3B607488DB35A47
