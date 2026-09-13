@@ -147,16 +147,46 @@ fi
 # todas as validações necessárias aconteceram antes desta etapa.
 # ---------------------------------------------------------------------------
 
-stow \
-    -n \
-    -R \
-    -d "$DOTFILES" \
-    -t "$HOME" \
-    "${PACKAGES[@]}" ||
-    {
+if ! STOW_CHECK="$(stow -n -R -d "$DOTFILES" -t "$HOME" "${PACKAGES[@]}" 2>&1)"; then
+    UNRESOLVED=0
+    SEEN_CONFLICT=0
+
+    while IFS= read -r line; do
+        case "$line" in
+            *"existing target "*)
+                SEEN_CONFLICT=1
+                rest="${line##*existing target }"
+                conflict="${rest%% *}"
+
+                covered=0
+
+                for t in "${TARGETS[@]}"; do
+                    if [[ "$conflict" == "$t" || "$conflict" == "$t/"* ]]; then
+                        covered=1
+                        break
+                    fi
+                done
+
+                if [[ "$covered" -eq 0 ]]; then
+                    echo "setup.sh: conflito fora dos dirs gerenciados: $conflict" >&2
+                    UNRESOLVED=1
+                fi
+                ;;
+        esac
+    done <<< "$STOW_CHECK"
+
+    if [[ "$SEEN_CONFLICT" -eq 0 ]]; then
+        echo "$STOW_CHECK" >&2
+        UNRESOLVED=1
+    fi
+
+    if [[ "$UNRESOLVED" -ne 0 ]]; then
         echo "setup.sh: simulação do Stow falhou; nada foi removido." >&2
         exit 1
-    }
+    fi
+
+    echo "setup.sh: conflitos sob dirs gerenciados serão resolvidos pela recriação."
+fi
 
 for target in "${TARGETS[@]}"; do
     rm -rf "$HOME/$target"
