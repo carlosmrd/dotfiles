@@ -122,6 +122,9 @@ install.sh — resumo
 
 EOF
 
+[[ -t 0 ]] ||
+    die "stdin não é interativo; execute em um terminal."
+
 read -rp "ENTER para começar unattended (Ctrl-C cancela)... " _
 
 # ---------------------------------------------------------------------------
@@ -150,6 +153,9 @@ fi
 
 log "instalando ferramentas de bootstrap do Arch"
 
+sudo pacman -Sy --needed --noconfirm archlinux-keyring ||
+    die "falha ao atualizar archlinux-keyring; verifique rede/espelhos."
+
 sudo pacman -Syu --needed --noconfirm \
     base-devel \
     curl \
@@ -171,8 +177,8 @@ ISA_PREVIEW="x86-64-v3"
 
 case "$CPU_MARCH" in
     znver4|znver5)
-        ISA_REPO="znver4"
-        ISA_PREVIEW="$CPU_MARCH"
+        ISA_REPO="v4"
+        ISA_PREVIEW="x86-64-v4 ($CPU_MARCH)"
         ;;
     *)
         if /lib/ld-linux-x86-64.so.2 --help 2>/dev/null |
@@ -299,22 +305,6 @@ Include = /etc/pacman.d/cachyos-mirrorlist
 EOF
             ;;
 
-        znver4)
-            cat > "$REPO_FRAGMENT" <<'EOF'
-[cachyos-znver4]
-Include = /etc/pacman.d/cachyos-v4-mirrorlist
-
-[cachyos-core-znver4]
-Include = /etc/pacman.d/cachyos-v4-mirrorlist
-
-[cachyos-extra-znver4]
-Include = /etc/pacman.d/cachyos-v4-mirrorlist
-
-[cachyos]
-Include = /etc/pacman.d/cachyos-mirrorlist
-EOF
-            ;;
-
         v3)
             cat > "$REPO_FRAGMENT" <<'EOF'
 [cachyos-v3]
@@ -359,7 +349,14 @@ EOF
         die "não foi possível inserir os repositórios CachyOS antes dos repositórios Arch."
     fi
 
-    sudo install -m 644 "$PACMAN_NEW" "$PACMAN_CONF"
+    PACMAN_TMP="$(sudo mktemp /etc/pacman.conf.XXXXXX)"
+
+    sudo install -m 644 "$PACMAN_NEW" "$PACMAN_TMP"
+    sudo mv -f "$PACMAN_TMP" "$PACMAN_CONF" ||
+        {
+            sudo rm -f "$PACMAN_TMP"
+            die "falha ao instalar $PACMAN_CONF."
+        }
 
     rm -f "$REPO_FRAGMENT" "$PACMAN_NEW"
 
@@ -539,8 +536,14 @@ OPTIONAL_PKGS=(
 
 log "instalando pacotes obrigatórios (${#REQUIRED_PKGS[@]})"
 
-sudo pacman -S --needed --noconfirm "${REQUIRED_PKGS[@]}" ||
-    die "falha ao instalar um ou mais pacotes obrigatórios."
+if ! sudo pacman -S --needed --noconfirm "${REQUIRED_PKGS[@]}"; then
+    warn "instalação em bloco falhou — tentando pacote a pacote."
+
+    for pkg in "${REQUIRED_PKGS[@]}"; do
+        sudo pacman -S --needed --noconfirm "$pkg" ||
+            warn "pacote obrigatório falhou: $pkg"
+    done
+fi
 
 log "instalando pacotes opcionais (${#OPTIONAL_PKGS[@]})"
 
@@ -568,7 +571,11 @@ else
 
         git clone --depth 1 \
             https://aur.archlinux.org/paru-bin.git \
-            "$TMP_PARU/paru-bin"
+            "$TMP_PARU/paru-bin" ||
+            {
+                rm -rf "$TMP_PARU"
+                die "falha ao clonar paru-bin; verifique a rede."
+            }
 
         if (
             cd "$TMP_PARU/paru-bin"
@@ -775,8 +782,18 @@ SYS_TIMERS=(
 log "habilitando serviços de sistema"
 
 for service in "${SYS_SERVICES[@]}"; do
-    if systemctl list-unit-files "$service.service" >/dev/null 2>&1 &&
-       systemctl cat "$service.service" >/dev/null 2>&1; then
+    unit="$service"
+
+    case "$unit" in
+        *.service|*.socket|*.timer|*.target)
+            ;;
+        *)
+            unit="$unit.service"
+            ;;
+    esac
+
+    if systemctl list-unit-files "$unit" >/dev/null 2>&1 &&
+       systemctl cat "$unit" >/dev/null 2>&1; then
 
         sudo systemctl \
             --no-ask-password \
@@ -784,6 +801,8 @@ for service in "${SYS_SERVICES[@]}"; do
             enable --now "$service" \
             2>/dev/null ||
             warn "falha ao habilitar $service"
+    else
+        warn "unit não encontrada, pulando: $service"
     fi
 done
 
@@ -1010,7 +1029,13 @@ fi
 sudo systemctl \
     --no-ask-password \
     --no-pager \
-    enable --now sshd
+    enable sshd
+
+sudo systemctl \
+    --no-ask-password \
+    --no-pager \
+    start sshd 2>/dev/null ||
+    warn "sshd habilitado, mas não iniciou agora; verifique após reboot."
 
 # ---------------------------------------------------------------------------
 # setup.sh

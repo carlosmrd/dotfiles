@@ -36,6 +36,12 @@ command -v stow >/dev/null 2>&1 ||
         exit 1
     }
 
+[[ -f "$DOTFILES/xdg/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" ]] ||
+    {
+        echo "setup.sh: yazi-wrapper.sh ausente no repositório." >&2
+        exit 1
+    }
+
 # ---------------------------------------------------------------------------
 # Pacotes Stow
 # ---------------------------------------------------------------------------
@@ -141,6 +147,17 @@ fi
 # todas as validações necessárias aconteceram antes desta etapa.
 # ---------------------------------------------------------------------------
 
+stow \
+    -n \
+    -R \
+    -d "$DOTFILES" \
+    -t "$HOME" \
+    "${PACKAGES[@]}" ||
+    {
+        echo "setup.sh: simulação do Stow falhou; nada foi removido." >&2
+        exit 1
+    }
+
 for target in "${TARGETS[@]}"; do
     rm -rf "$HOME/$target"
 done
@@ -172,12 +189,6 @@ stow \
 # ---------------------------------------------------------------------------
 
 WRAPPER="$DOTFILES/xdg/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh"
-
-[[ -f "$WRAPPER" ]] ||
-    {
-        echo "setup.sh: yazi-wrapper.sh não encontrado." >&2
-        exit 1
-    }
 
 chmod +x "$WRAPPER"
 
