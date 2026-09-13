@@ -63,6 +63,69 @@ package_installed() {
     pacman -Q "$1" >/dev/null 2>&1
 }
 
+try_import_cachyos_key() {
+    sudo pacman-key --init 2>/dev/null ||
+        warn "pacman-key --init reportou erro; tentando receber a chave mesmo assim."
+
+    local key_ok=0
+    local ks=""
+
+    for ks in \
+        "keyserver.ubuntu.com" \
+        "keys.openpgp.org" \
+        "hkp://keyserver.ubuntu.com:80"
+    do
+        log "recebendo chave CachyOS via $ks"
+
+        if sudo timeout 30 pacman-key \
+            --recv-keys F3B607488DB35A47 \
+            --keyserver "$ks" \
+            --keyserver-options timeout=10; then
+            key_ok=1
+            break
+        fi
+
+        warn "keyserver $ks falhou; tentando o próximo."
+    done
+
+    if [[ "$key_ok" -eq 0 ]]; then
+        log "recebendo chave CachyOS via HTTPS (keys.openpgp.org)"
+
+        local key_tmp=""
+        key_tmp="$(mktemp)"
+
+        if curl -fsSL --retry 2 --retry-delay 3 \
+                --connect-timeout 15 --max-time 60 \
+                "https://keys.openpgp.org/vks/v1/by-keyid/F3B607488DB35A47" \
+                -o "$key_tmp" 2>/dev/null &&
+            [[ -s "$key_tmp" ]] &&
+            sudo pacman-key --add "$key_tmp"; then
+            key_ok=1
+        else
+            warn "fallback HTTPS falhou."
+        fi
+
+        rm -f "$key_tmp"
+    fi
+
+    [[ "$key_ok" -eq 1 ]] || return 1
+
+    sudo pacman-key --list-keys F3B607488DB35A47 >/dev/null 2>&1 || return 1
+    sudo pacman-key --lsign-key F3B607488DB35A47 || return 1
+
+    return 0
+}
+
+repair_cachyos_trust() {
+    log "reparando confiança nas chaves CachyOS"
+
+    try_import_cachyos_key ||
+        warn "re-importação da chave CachyOS falhou."
+
+    sudo pacman-key --populate archlinux cachyos 2>/dev/null ||
+        warn "populate de chaves archlinux/cachyos falhou."
+}
+
 # ---------------------------------------------------------------------------
 # Pré-validação
 # ---------------------------------------------------------------------------
@@ -174,8 +237,12 @@ done
 
 log "instalando ferramentas de bootstrap do Arch"
 
-sudo pacman -Sy --needed --noconfirm archlinux-keyring ||
-    die "falha ao atualizar archlinux-keyring; verifique rede/espelhos."
+if ! sudo pacman -Sy --needed --noconfirm archlinux-keyring; then
+    warn "sincronização inicial falhou — reparando confiança CachyOS e repetindo com refresh forçado."
+    repair_cachyos_trust
+    sudo pacman -Syy --needed --noconfirm archlinux-keyring ||
+        die "falha ao atualizar archlinux-keyring; verifique rede/espelhos."
+fi
 
 sudo pacman -Syu --needed --noconfirm \
     base-devel \
@@ -296,58 +363,8 @@ else
     [[ -n "$PACMAN_PKG" ]] ||
         die "pacman do CachyOS não encontrado no mirror."
 
-    log "inicializando pacman-key"
-
-    sudo pacman-key --init 2>/dev/null ||
-        warn "pacman-key --init reportou erro; tentando receber a chave mesmo assim."
-
-    KEY_OK=0
-
-    for ks in \
-        "keyserver.ubuntu.com" \
-        "keys.openpgp.org" \
-        "hkp://keyserver.ubuntu.com:80"
-    do
-        log "recebendo chave CachyOS via $ks"
-
-        if sudo timeout 30 pacman-key \
-            --recv-keys F3B607488DB35A47 \
-            --keyserver "$ks" \
-            --keyserver-options timeout=10; then
-            KEY_OK=1
-            break
-        fi
-
-        warn "keyserver $ks falhou; tentando o próximo."
-    done
-
-    if [[ "$KEY_OK" -eq 0 ]]; then
-        log "recebendo chave CachyOS via HTTPS (keys.openpgp.org)"
-
-        CACHYOS_KEY_TMP="$(mktemp)"
-
-        if curl -fsSL --retry 2 --retry-delay 3 \
-                --connect-timeout 15 --max-time 60 \
-                "https://keys.openpgp.org/vks/v1/by-keyid/F3B607488DB35A47" \
-                -o "$CACHYOS_KEY_TMP" 2>/dev/null &&
-            [[ -s "$CACHYOS_KEY_TMP" ]] &&
-            sudo pacman-key --add "$CACHYOS_KEY_TMP"; then
-            KEY_OK=1
-        else
-            warn "fallback HTTPS falhou."
-        fi
-
-        rm -f "$CACHYOS_KEY_TMP"
-    fi
-
-    [[ "$KEY_OK" -eq 1 ]] ||
-        die "falha ao receber a chave CachyOS (3 keyservers + HTTPS)."
-
-    sudo pacman-key --list-keys F3B607488DB35A47 >/dev/null 2>&1 ||
-        die "chave CachyOS não encontrada após importação."
-
-    sudo pacman-key --lsign-key F3B607488DB35A47 ||
-        die "falha ao assinar localmente a chave CachyOS."
+    try_import_cachyos_key ||
+        die "falha ao receber/assinar a chave CachyOS (3 keyservers + HTTPS)."
 
     log "instalando keyring, mirrorlists e pacman do CachyOS"
 
