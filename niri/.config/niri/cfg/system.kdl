@@ -16,6 +16,6 @@ hotkey-overlay {
 
 // Cursor
 cursor {
-    xcursor-theme "manhattan-cafe"
+    xcursor-theme "Bibata-Modern-Ice"
     xcursor-size 24
 }

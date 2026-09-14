@@ -8,14 +8,12 @@ layer-rule {
     match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
     background-effect {
         xray false
-        blur true
     }
 }
 
 layer-rule {
     match namespace="noctalia-window-switcher"
     background-effect {
-        blur true
         xray false
     }
 }
@@ -32,9 +30,8 @@ window-rule {
     opacity 0.90
     background-effect {
         blur true
-        xray false
+        xray true
     }
-    draw-border-with-background false
 }
 
 // Floating
