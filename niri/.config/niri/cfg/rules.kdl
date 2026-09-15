@@ -81,13 +81,11 @@ window-rule {
 }
 
 window-rule {
-    match app-id="steam_proton"
     match title="GRYPHLINK"
     open-floating false
 }
 
 window-rule {
-    match app-id="steam_app_default"
     match title="HoYoPlay"
     open-floating false
 }

@@ -3,16 +3,22 @@
 
   // Logo
   "logo": {
-    "source": "~/.config/fastfetch/logo.txt",
-    "padding": {
-      "top": 0,
-      "right": 2
-    },
-    "color": {
-      "1": "white",
-      "2": "white"
-    }
+    "type": "kitty-icat",
+    "source": "~/.config/fastfetch/images/remie.gif",
+    "width": 42
   },
+
+  // "logo": {
+  //   "source": "~/.config/fastfetch/logo.txt",
+  //   "padding": {
+  //     "top": 0,
+  //     "right": 2
+  //   },
+  //   "color": {
+  //     "1": "white",
+  //     "2": "white"
+  //   }
+  // },
 
   // Style
   "display": {
