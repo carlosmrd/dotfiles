@@ -50,6 +50,7 @@ PACKAGES=(
     btop
     fastfetch
     fish
+    gtk
     kitty
     mangohud
     mpv
@@ -77,6 +78,8 @@ TARGETS=(
     .config/btop
     .config/fastfetch
     .config/fish
+    .config/gtk-3.0
+    .config/gtk-4.0
     .config/kitty
     .config/MangoHud
     .config/mpv

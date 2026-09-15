@@ -1,0 +1,11 @@
+[opener]
+run = [
+  { run = '"%s"', desc = "Run directly", for = "unix", orphan = true },
+]
+
+[open]
+prepend_rules = [
+  { url = "*.AppImage", use = [ "run", "open", "reveal" ] },
+  { mime = "application/x-appimage", use = [ "run", "open", "reveal" ] },
+  { mime = "application/vnd.appimage", use = [ "run", "open", "reveal" ] },
+]
