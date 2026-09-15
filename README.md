@@ -38,8 +38,12 @@ paru -S bibata-cursor-theme-bin xdg-desktop-portal-termfilechooser-hunkyburrito-
 
 ## Look & feel
 
-* GTK3 `adw-gtk3-dark` / GTK4 `Adwaita`, icons `Papirus-Dark`, cursor `Bibata-Modern-Ice`, font `IBM Plex Sans`, terminal font JetBrains Mono Nerd.
-* Note: this machine currently carries a manual `/usr/local/share/fonts` copy of IBM Plex Sans — the `ttf-ibm-plex` package above is the recommended source. `capitaine-cursors` is installed but superseded by Bibata.
+* GTK3 theme: `adw-gtk3-dark`
+* GTK4 theme: `Adwaita`
+* Icons: `Papirus-Dark`
+* Cursor: `Bibata-Modern-Ice`
+* Font: `IBM Plex Sans`
+* Terminal font: JetBrains Mono Nerd
 
 ## Plugins and extensions
 
@@ -78,7 +82,7 @@ exec fish
 
 ## Post-install plugins (run after `setup.sh`)
 
-fisher needs fish; `ya pkg install` needs the stowed `~/.config/yazi/package.toml`:
+fisher needs fish;  `ya pkg install` needs the stowed `~/.config/yazi/package.toml`:
 
 ```sh
 fisher install pure-fish/pure jorgebucaran/autopair.fish franciscolourenco/done
@@ -88,11 +92,7 @@ fisher install pure-fish/pure jorgebucaran/autopair.fish franciscolourenco/done
 ya pkg install
 ```
 
-### Apply GTK settings to running apps
-
-`settings.ini` is only read at app startup, so already-running apps keep stale
-theming until restarted. These `gsettings` commands push the same values live
-(matching the stowed `gtk` `settings.ini` files):
+### Apply GTK settings
 
 ```sh
 gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
