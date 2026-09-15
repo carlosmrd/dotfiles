@@ -43,7 +43,7 @@ paru -S bibata-cursor-theme-bin xdg-desktop-portal-termfilechooser-hunkyburrito-
 * Icons: `Papirus-Dark`
 * Cursor: `Bibata-Modern-Ice`
 * Font: `IBM Plex Sans`
-* Terminal font: JetBrains Mono Nerd
+* Terminal font: `JetBrains Mono Nerd`
 
 ## Plugins and extensions
 
@@ -82,7 +82,7 @@ exec fish
 
 ## Post-install plugins (run after `setup.sh`)
 
-fisher needs fish;  `ya pkg install` needs the stowed `~/.config/yazi/package.toml`:
+fisher needs fish; `ya pkg install` needs the stowed `~/.config/yazi/package.toml`:
 
 ```sh
 fisher install pure-fish/pure jorgebucaran/autopair.fish franciscolourenco/done
