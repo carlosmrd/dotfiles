@@ -29,7 +29,7 @@ links its `.config/...` tree into `$HOME`.
 ## Install packages
 
 ```sh
-sudo pacman -S adw-gtk-theme btop fastfetch fish fisher git kitty lib32-mangohud libreoffice-fresh mangohud mpv niri noctalia noctalia-greeter noto-fonts openrgb opentabletdriver papirus-icon-theme pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse stow sunshine ttf-ibm-plex ttf-jetbrains-mono-nerd wireplumber xdg-desktop-portal xdg-desktop-portal-gtk yazi zed
+sudo pacman -S adw-gtk-theme btop fastfetch fish fisher git jq kitty lib32-mangohud libreoffice-fresh mangohud mpv niri noctalia noctalia-greeter noto-fonts openrgb opentabletdriver papirus-icon-theme pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse stow sunshine ttf-ibm-plex ttf-jetbrains-mono-nerd wireplumber xdg-desktop-portal xdg-desktop-portal-gtk yazi zed
 ```
 
 ```sh
@@ -86,4 +86,18 @@ fisher install pure-fish/pure jorgebucaran/autopair.fish franciscolourenco/done
 
 ```sh
 ya pkg install
+```
+
+### Apply GTK settings to running apps
+
+`settings.ini` is only read at app startup, so already-running apps keep stale
+theming until restarted. These `gsettings` commands push the same values live
+(matching the stowed `gtk` `settings.ini` files):
+
+```sh
+gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 11'
+gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```
