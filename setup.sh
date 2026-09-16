@@ -36,12 +36,6 @@ command -v stow >/dev/null 2>&1 ||
         exit 1
     }
 
-[[ -f "$DOTFILES/xdg/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" ]] ||
-    {
-        echo "setup.sh: yazi-wrapper.sh ausente no repositório." >&2
-        exit 1
-    }
-
 # ---------------------------------------------------------------------------
 # Pacotes Stow
 # ---------------------------------------------------------------------------
@@ -62,7 +56,6 @@ PACKAGES=(
     sunshine
     wireplumber
     xdg
-    yazi
     zed
 )
 
@@ -91,8 +84,6 @@ TARGETS=(
     .config/sunshine
     .config/wireplumber
     .config/xdg-desktop-portal
-    .config/xdg-desktop-portal-termfilechooser
-    .config/yazi
     .config/zed
 )
 
@@ -218,22 +209,10 @@ stow \
     "${PACKAGES[@]}"
 
 # ---------------------------------------------------------------------------
-# Yazi file chooser wrapper
-# ---------------------------------------------------------------------------
-
-WRAPPER="$DOTFILES/xdg/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh"
-
-chmod +x "$WRAPPER"
-
-# ---------------------------------------------------------------------------
 # Serviços de usuário
 # ---------------------------------------------------------------------------
 
 if command -v systemctl >/dev/null 2>&1; then
-
-    systemctl --user stop \
-        xdg-desktop-portal-termfilechooser.service \
-        2>/dev/null || true
 
     systemctl --user stop \
         xdg-desktop-portal.service \

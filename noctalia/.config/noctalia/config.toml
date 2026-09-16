@@ -111,7 +111,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "kitty", "niri", "qt" ]
-    community_ids = [ "opencode", "pywalfox-beta4", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "fastfetch", "yazi" ]
+    community_ids = [ "opencode", "pywalfox-beta4", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "fastfetch" ]
 
 # Wallpaper
 [wallpaper]
