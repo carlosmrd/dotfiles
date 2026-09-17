@@ -19,5 +19,5 @@ spawn-at-startup "noctalia"
 // Apps
 spawn-sh-at-startup "steam -silent"
 spawn-sh-at-startup "sleep 2 && discord"
-spawn-sh-at-startup "sleep 8 && spotify-launcher"
+spawn-sh-at-startup "sleep 8 && spotifast"
 spawn-sh-at-startup "sleep 8 && openrgb --profile Purple"

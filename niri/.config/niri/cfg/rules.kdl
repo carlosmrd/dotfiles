@@ -82,7 +82,7 @@ window-rule {
 }
 
 window-rule {
-    match app-id="Spotify"
+    match app-id="fastpotify"
     open-on-output "HDMI-A-1"
 }
 
