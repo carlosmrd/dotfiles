@@ -7,15 +7,15 @@ links its `.config/...` tree into `$HOME`.
 
 | Package | Target |
 |---|---|
-| btop | `~/.config/btop` |
-| fastfetch | `~/.config/fastfetch` |
+| btop | `~/.config/btop` (`btop.conf` only; `themes/noctalia.theme` is Noctalia-generated) |
+| fastfetch | `~/.config/fastfetch` (`config.jsonc`, `logo.txt`, `images/` only; `themes/` output is Noctalia-generated) |
 | fish | `~/.config/fish` |
 | gtk | `~/.config/gtk-3.0`, `~/.config/gtk-4.0` (`settings.ini` only; `gtk.css`/`noctalia.css` are Noctalia-generated) |
-| kitty | `~/.config/kitty` |
+| kitty | `~/.config/kitty` (`kitty.conf` only; `themes/noctalia.conf` is Noctalia-generated) |
 | libreoffice | (not stowed — local profile only; `libreoffice-fresh` installed via pacman for the Noctalia template) |
 | mangohud | `~/.config/MangoHud` |
 | mpv | `~/.config/mpv` |
-| niri | `~/.config/niri` |
+| niri | `~/.config/niri` (`config.kdl`, `cfg/` only; `noctalia.kdl` is Noctalia-generated) |
 | noctalia | `~/.config/noctalia` |
 | openrgb | `~/.config/OpenRGB` |
 | opentabletdriver | `~/.config/OpenTabletDriver` |
@@ -23,7 +23,7 @@ links its `.config/...` tree into `$HOME`.
 | sunshine | `~/.config/sunshine` |
 | wireplumber | `~/.config/wireplumber` |
 | xdg | `~/.config/xdg-desktop-portal` |
-| zed | `~/.config/zed` |
+| zed | `~/.config/zed` (`settings.json` only; `themes/` output is Noctalia-generated) |
 | zen | `~/.config/zen/profiles.ini`, `installs.ini`, `3yi7xldz.Default (release)/user.js`, `zen-themes.json`, `containers.json`, `chrome/userChrome.css`, `chrome/userContent.css` (pinned profile, file-level only; history/logins/cache stay local) |
 
 > System packages (`pacman` + one AUR package) are installed automatically
