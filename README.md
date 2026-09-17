@@ -24,7 +24,6 @@ links its `.config/...` tree into `$HOME`.
 | wireplumber | `~/.config/wireplumber` |
 | xdg | `~/.config/xdg-desktop-portal` |
 | zed | `~/.config/zed` |
-| zen | `~/.config/zen/profiles.ini`, `installs.ini`, `3yi7xldz.Default (release)/user.js`, `zen-themes.json`, `containers.json`, `chrome/userChrome.css`, `chrome/userContent.css` (pinned profile, file-level only; history/logins/cache stay local) |
 
 > System packages (`pacman` + one AUR package) are installed automatically
 > by `setup.sh` — see `PACMAN_PKGS` in the script. No manual installing.
@@ -59,14 +58,6 @@ cd ~/.dotfiles
 
 Then log out and back in (applies the default shell).
 
-### New machine with Zen installed
-
-Zen auto-creates a random profile on first launch that this repo does not
-manage. Before running `setup.sh`, quit Zen (if you have it installed) and delete its auto-generated
-profile directory (`~/.config/zen/<random>.Default*`, `Profile Groups`,
-`firefox-mpris`) so the pinned `3yi7xldz.Default (release)` profile takes
-over. Re-sign into Firefox Sync afterwards (logins are never tracked).
-
 `setup.sh` is idempotent (safe to re-run) and does, in order:
 
 1. Installs system packages (`sudo pacman -S --needed`, AUR via `paru -S --needed`; skipped gracefully when unavailable).
@@ -100,3 +91,20 @@ gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 11'
 gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```
+
+## Zen browser profile
+
+Managed separately from the stow packages above: Zen profiles live under
+random IDs, so this repo pins `3yi7xldz.Default (release)` via stowed
+`profiles.ini` / `installs.ini` plus file-level entries for `user.js`,
+`zen-themes.json`, `containers.json`, and `chrome/userChrome.css` /
+`chrome/userContent.css`. History, logins, cookies, cache, and extensions
+stay local (addons and prefs roam via Firefox Sync instead).
+
+### New machine
+
+Zen auto-creates a random profile on first launch that this repo does not
+manage. Before running `setup.sh`, quit Zen (if you have it installed) and
+delete its auto-generated profile directory (`~/.config/zen/<random>.Default*`,
+`Profile Groups`, `firefox-mpris`) so the pinned profile takes over.
+Re-sign into Firefox Sync afterwards (logins are never tracked).
