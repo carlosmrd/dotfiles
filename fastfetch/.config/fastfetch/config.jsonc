@@ -24,15 +24,15 @@
   "display": {
     "separator": ": ",
     "color": {
-      "keys": "#ffb4ca",
-      "title": "#f4b6c7"
+      "keys": "magenta",
+      "title": "bright_magenta"
     },
     "percent": {
       "type": 9,
       "color": {
-        "green": "#ffba8a",
-        "yellow": "#ffb1c8",
-        "red": "#ffb4ab"
+        "green": "green",
+        "yellow": "yellow",
+        "red": "red"
       }
     }
   },

@@ -12,7 +12,7 @@ links its `.config/...` tree into `$HOME`.
 | fish | `~/.config/fish` |
 | gtk | `~/.config/gtk-3.0`, `~/.config/gtk-4.0` (`settings.ini` only; `gtk.css`/`noctalia.css` are Noctalia-generated) |
 | kitty | `~/.config/kitty` |
-| libreoffice | `~/.config/libreoffice` (dotfiles pending) |
+| libreoffice | (not stowed — local profile only; `libreoffice-fresh` installed via pacman for the Noctalia template) |
 | mangohud | `~/.config/MangoHud` |
 | mpv | `~/.config/mpv` |
 | niri | `~/.config/niri` |
@@ -24,16 +24,10 @@ links its `.config/...` tree into `$HOME`.
 | wireplumber | `~/.config/wireplumber` |
 | xdg | `~/.config/xdg-desktop-portal` |
 | zed | `~/.config/zed` |
+| zen | `~/.config/zen/profiles.ini`, `installs.ini`, `3yi7xldz.Default (release)/user.js`, `zen-themes.json`, `containers.json`, `chrome/userChrome.css`, `chrome/userContent.css` (pinned profile, file-level only; history/logins/cache stay local) |
 
-## Install packages
-
-```sh
-sudo pacman -S adw-gtk-theme btop fastfetch fish fisher git jq kitty lib32-mangohud libreoffice-fresh mangohud mpv niri noctalia noctalia-greeter noto-fonts openrgb opentabletdriver papirus-icon-theme pavucontrol pipewire pipewire-alsa pipewire-jack pipewire-pulse stow sunshine ttf-ibm-plex ttf-jetbrains-mono-nerd wireplumber xdg-desktop-portal xdg-desktop-portal-gtk zed
-```
-
-```sh
-paru -S bibata-cursor-theme-bin
-```
+> System packages (`pacman` + one AUR package) are installed automatically
+> by `setup.sh` — see `PACMAN_PKGS` in the script. No manual installing.
 
 ## Look & feel
 
@@ -52,7 +46,7 @@ paru -S bibata-cursor-theme-bin
 ## Noctalia templates (enabled in `noctalia/config.toml`)
 
 * Builtin (6): `btop`, `gtk3`, `gtk4`, `kitty`, `niri`, `qt`.
-* Community (9): `opencode`, `pywalfox-beta4`, `discord`, `prismlauncher`, `steam`, `zed`, `libreoffice`, `gimp`, `fastfetch`.
+* Community (8): `opencode`, `discord`, `prismlauncher`, `steam`, `zed`, `libreoffice`, `gimp`, `zen-browser`.
 * Generated outputs are not tracked.
 
 ## Installation
@@ -61,23 +55,37 @@ paru -S bibata-cursor-theme-bin
 git clone https://github.com/carlosmrd/dotfiles ~/.dotfiles
 cd ~/.dotfiles
 ./setup.sh
-exec fish
 ```
+
+Then log out and back in (applies the default shell).
+
+### New machine with Zen installed
+
+Zen auto-creates a random profile on first launch that this repo does not
+manage. Before running `setup.sh`, quit Zen (if you have it installed) and delete its auto-generated
+profile directory (`~/.config/zen/<random>.Default*`, `Profile Groups`,
+`firefox-mpris`) so the pinned `3yi7xldz.Default (release)` profile takes
+over. Re-sign into Firefox Sync afterwards (logins are never tracked).
 
 `setup.sh` is idempotent (safe to re-run) and does, in order:
 
-1. Backs up live files that are **not** tracked in this repo
-   (`fish_variables`, Sunshine credentials/state, OpenTabletDriver's stale
-   `Settings.json`, logs, plugin dirs, niri `*.backup*`) to
+1. Installs system packages (`sudo pacman -S --needed`, AUR via `paru -S --needed`; skipped gracefully when unavailable).
+2. Backs up every managed `~/.config` dir that is about to be wiped
+   (whole dirs, symlinks back into this repo excluded) to
    `~/.dotfiles-backup/<timestamp>/` — prune old backups yourself.
-2. Wipes the 17 app config dirs owned by the packages below.
-3. Copies `images/` to `~/Pictures/Wallpapers` and `~/Pictures/Icons`.
-4. Restows all packages (`stow -R`) into `$HOME`.
-5. Restarts the portal stack, `pipewire` / `pipewire-pulse` / `wireplumber`,
+3. Wipes the 17 app config dirs owned by the packages below.
+4. Copies `images/Icons/*` to `~/Pictures/Icons` and `images/Wallpapers/*` to `~/Pictures/Wallpapers` (plain copies, not Stow-managed).
+5. Restows all packages (`stow -R`) into `$HOME`.
+6. Restarts the portal stack, `pipewire` / `pipewire-pulse` / `wireplumber`,
    and `opentabletdriver` (every call guarded — missing units never abort it).
-6. Reloads noctalia (`noctalia msg config-reload`, no session kill).
+7. Reloads noctalia (`noctalia msg config-reload`, no session kill) and
+   regenerates template outputs (`noctalia msg templates-apply`; outputs are
+   not tracked in git).
+8. Installs fisher plugins (`pure`, `autopair`, `done`; skipped if fisher is missing).
+9. Applies GTK settings via `gsettings` (skipped if `gsettings` is missing).
+10. Sets fish as the default shell via `chsh` (skipped if already set or if `fish`/`chsh` is missing; takes effect on next login).
 
-## Post-install plugins (run after `setup.sh`)
+## Post-install (automatic in `setup.sh`, manual fallback below)
 
 ```sh
 fisher install pure-fish/pure jorgebucaran/autopair.fish franciscolourenco/done

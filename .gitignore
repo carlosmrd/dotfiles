@@ -13,12 +13,37 @@
 **/prefixes/
 **/*.backup*
 **/*.bak
+openrgb/.config/OpenRGB/OpenRGB.json
+
+# Fisher-managed plugins (land in the repo through the symlinked fish dir)
+fish/.config/fish/fish_plugins
+fish/.config/fish/functions/
+fish/.config/fish/conf.d/
+fish/.config/fish/completions/
 
 # Noctalia-generated GTK/Qt theme outputs (templates managed via config.toml)
 **/gtk-3.0/noctalia.css
 **/gtk-4.0/noctalia.css
 **/gtk-3.0/gtk.css
 **/gtk-4.0/gtk.css
+
+# Noctalia-generated app theme outputs (regenerated on config-reload)
+btop/.config/btop/themes/noctalia.theme
+fastfetch/.config/fastfetch/themes/noctalia.jsonc
+kitty/.config/kitty/themes/noctalia.conf
+niri/.config/niri/noctalia.kdl
+zed/.config/zed/themes/noctalia.json
+
+# Zen runtime/generated state (package tracks profiles.ini, installs.ini,
+# user.js, zen-themes.json, containers.json, chrome/*.css only)
+**/.parentlock
+**/lock
+**/*.sqlite-wal
+**/*.sqlite-shm
+**/sessionstore-backups/
+**/zen-sessions-backup/
+**/chrome/zen-themes.css
+**/chrome/zen-themes/
 
 # OS/editor noise
 .DS_Store

@@ -39,16 +39,22 @@ window-rule {
     match app-id="file_chooser"
     open-floating true
     default-column-width {
-        fixed 1000
+        fixed 960
     }
     default-window-height {
-        fixed 650
+        fixed 540
     }
 }
 
 window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"zen$"# title="^Picture-in-Picture$"
     open-floating true
+    default-column-width {
+        fixed 640
+    }
+    default-window-height {
+        fixed 360
+    }
 }
 
 // Apps

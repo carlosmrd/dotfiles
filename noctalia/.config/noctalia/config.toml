@@ -51,28 +51,13 @@ type = "clipboard"
 [[control_center.shortcuts]]
 type = "session"
 
-# Dock
-[dock]
-background_opacity = 0.8
-cross_axis_padding = 2
-enabled = false
-icon_size = 36
-item_spacing = 0
-launcher_position = "end"
-pinned = [ "kitty", "firefox", "discord", "steam", "spotify-launcher" ]
-radius = 8
-radius_bottom_left = 8
-radius_bottom_right = 8
-radius_top_left = 8
-radius_top_right = 8
-
 # Plugins
 [plugins]
 enabled = []
 
 # Shell
 [shell]
-avatar_path = "/home/carlos/Pictures/Icons/Eblana.jpg"
+avatar_path = "/home/carlos/Pictures/Icons/Remielle.jpg"
 corner_radius_scale = 1.0
 font_family = "IBM Plex Sans"
 
@@ -81,7 +66,7 @@ font_family = "IBM Plex Sans"
     compact = true
 
     [shell.mpris]
-    blacklist = [ "firefox" ]
+    blacklist = [ "zen" ]
 
     [shell.panel]
     borders = false
@@ -111,14 +96,14 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "kitty", "niri", "qt" ]
-    community_ids = [ "opencode", "pywalfox-beta4", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "fastfetch" ]
+    community_ids = [ "opencode", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "zen-browser" ]
 
 # Wallpaper
 [wallpaper]
 directory = "~/Pictures/Wallpapers"
 
     [wallpaper.default]
-    path = "/home/carlos/Pictures/Wallpapers/Remielle.png"
+    path = "/home/carlos/Pictures/Wallpapers/Remielle 01.jpg"
 
     [wallpaper.automation]
     enabled = false
