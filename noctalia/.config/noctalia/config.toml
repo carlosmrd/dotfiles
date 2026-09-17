@@ -96,7 +96,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "gtk3", "gtk4", "kitty", "niri", "qt" ]
-    community_ids = [ "opencode", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "zen-browser" ]
+    community_ids = [ "opencode", "discord", "prismlauncher", "steam", "zed", "libreoffice", "gimp", "zen-browser", "papirus-icons" ]
 
 # Wallpaper
 [wallpaper]

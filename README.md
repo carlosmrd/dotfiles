@@ -45,7 +45,7 @@ links its `.config/...` tree into `$HOME`.
 ## Noctalia templates (enabled in `noctalia/config.toml`)
 
 * Builtin (6): `btop`, `gtk3`, `gtk4`, `kitty`, `niri`, `qt`.
-* Community (8): `opencode`, `discord`, `prismlauncher`, `steam`, `zed`, `libreoffice`, `gimp`, `zen-browser`.
+* Community (9): `opencode`, `discord`, `prismlauncher`, `steam`, `zed`, `libreoffice`, `gimp`, `zen-browser`, `papirus-icons`.
 * Generated outputs are not tracked.
 
 ## Installation
