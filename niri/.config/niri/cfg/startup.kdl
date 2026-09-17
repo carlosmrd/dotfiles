@@ -14,6 +14,7 @@ spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
 // Shell
 spawn-at-startup "noctalia"
+spawn-at-startup "playerctld" "daemon"
 
 // Apps
 spawn-sh-at-startup "steam -silent"
