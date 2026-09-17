@@ -161,7 +161,7 @@ show_condition = false
 
 [widget.tray]
 drawer = false
-hidden = [ "arch-update-tray" ]
+hidden = [ "arch-update-tray", "fastpotify" ]
 hide_passive = true
 pinned = []
 
