@@ -27,23 +27,11 @@ fish/.config/fish/completions/
 **/gtk-3.0/gtk.css
 **/gtk-4.0/gtk.css
 
-# Noctalia-generated app theme outputs (regenerated on config-reload)
+# Noctalia-generated app theme outputs (regenerated on config-reload, except noctalia.kdl)
 btop/.config/btop/themes/noctalia.theme
 fastfetch/.config/fastfetch/themes/noctalia.jsonc
 kitty/.config/kitty/themes/noctalia.conf
-niri/.config/niri/noctalia.kdl
 zed/.config/zed/themes/noctalia.json
-
-# Zen runtime/generated state (package tracks profiles.ini, installs.ini,
-# user.js, zen-themes.json, containers.json, chrome/*.css only)
-**/.parentlock
-**/lock
-**/*.sqlite-wal
-**/*.sqlite-shm
-**/sessionstore-backups/
-**/zen-sessions-backup/
-**/chrome/zen-themes.css
-**/chrome/zen-themes/
 
 # OS/editor noise
 .DS_Store

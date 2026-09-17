@@ -111,7 +111,6 @@ PACKAGES=(
     wireplumber
     xdg
     zed
-    zen
 )
 
 for package in "${PACKAGES[@]}"; do
@@ -140,13 +139,6 @@ TARGETS=(
     .config/wireplumber
     .config/xdg-desktop-portal
     .config/zed
-    ".config/zen/profiles.ini"
-    ".config/zen/installs.ini"
-    ".config/zen/3yi7xldz.Default (release)/user.js"
-    ".config/zen/3yi7xldz.Default (release)/zen-themes.json"
-    ".config/zen/3yi7xldz.Default (release)/containers.json"
-    ".config/zen/3yi7xldz.Default (release)/chrome/userChrome.css"
-    ".config/zen/3yi7xldz.Default (release)/chrome/userContent.css"
 )
 
 # Remove old configs (all validation happens before this point)
